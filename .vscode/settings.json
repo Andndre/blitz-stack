@@ -1,0 +1,4 @@
+{
+  "jest.disabledWorkspaceFolders": ["frontend"],
+  "bun.test.args": ["--preload", "./test-setup.ts"]
+}

@@ -1,0 +1,46 @@
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: dealer_heronusa_db
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: dealer_heronusa
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  # Go Backend
+  backend:
+    build: ./backend
+    container_name: dealer_heronusa_backend
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_NAME: dealer_heronusa
+      DB_PORT: 5432
+
+  # Next.js Frontend
+  frontend:
+    build: ./frontend
+    container_name: dealer_heronusa_frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8080 # Client-side access
+      API_URL: http://backend:8080               # Server-side access (Docker network)
+
+volumes:
+  db_data:
