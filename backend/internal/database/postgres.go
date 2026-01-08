@@ -32,12 +32,11 @@ func Connect() (*sql.DB, error) {
 
 func InitTable(db *sql.DB) {
 	query := `
-	CREATE TABLE IF NOT EXISTS dealers (
+	CREATE TABLE IF NOT EXISTS items (
 		id SERIAL PRIMARY KEY,
-		name TEXT NOT NULL,
-		city TEXT NOT NULL
-	);
-	`
+		title TEXT NOT NULL,
+		description TEXT NOT NULL
+	);`
 	_, err := db.Exec(query)
 	if err != nil {
 		log.Fatal(err)
@@ -45,22 +44,20 @@ func InitTable(db *sql.DB) {
 }
 
 func Seed(db *sql.DB) {
-	// Seed data if empty logic
 	var count int
-	db.QueryRow("SELECT COUNT(*) FROM dealers").Scan(&count)
+	db.QueryRow("SELECT COUNT(*) FROM items").Scan(&count)
 	
 	if count == 0 {
-		query := `INSERT INTO dealers (name, city) VALUES 
-			('Kantor Pusat', 'Jalan Kartini Nomor 71 hingga 75, Kelurahan Dangin Puri Kaja, Denpasar Utara'),
-			('Kantor Cabang WR Supratman', 'Jalan WR Supratman Nomor 130, Denpasar'),
-			('Kantor Cabang Tuban', 'Jalan Raya Tuban Nomor 100X, Tuban, Kabupaten Badung (wilayah Kuta Selatan)'),
-			('Pos Penjualan Pemogan', 'Berlokasi di daerah Pemogan')`
+		query := `INSERT INTO items (title, description) VALUES 
+			('First Blitz Item', 'This is a sample item from the Blitz Stack seeder.க்கான'),
+			('Scalable Backend', 'Go provides amazing performance for your API.'),
+			('Fast Frontend', 'Next.js and Bun ensure a snappy user experience.')`
 		
 		_, err := db.Exec(query)
 		if err != nil {
 			log.Printf("Error seeding data: %v\n", err)
 		} else {
-			fmt.Println("Seeded database with initial dealer data.")
+			fmt.Println("Seeded database with initial Blitz data.")
 		}
 	} else {
 		fmt.Println("Database already contains data. Skipping seed.")

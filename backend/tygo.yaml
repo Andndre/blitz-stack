@@ -1,3 +1,3 @@
 packages:
-  - path: "dealer-heronusa/backend/models"
+  - path: "blitz-stack/backend/models"
     output_path: "../frontend/types/index.ts"

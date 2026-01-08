@@ -1,101 +1,161 @@
-# Dealer Heronusa Stack
+# Blitz Stack Starter
 
-Project ini adalah template modern fullstack menggunakan Next.js sebagai frontend, Go sebagai backend, dan PostgreSQL sebagai database. Seluruh aplikasi dikelola menggunakan Docker dengan arsitektur High Performance.
+Project ini adalah template fullstack modern yang menggabungkan performa **Go** di backend, fleksibilitas **Next.js** di frontend, kecepatan runtime **Bun**, dan kehandalan **PostgreSQL**. Dirancang untuk pengembangan aplikasi web yang cepat, scalable, dan type-safe.
 
 ## 🚀 Tech Stack
 
-- **Frontend:** [Next.js](https://nextjs.org/) (App Router) + [Bun](https://bun.sh/)
-- **Backend:** [Go](https://go.dev/) (Standard Library + Clean Architecture)
+- **Frontend:** [Next.js 15](https://nextjs.org/) (App Router) + [Bun](https://bun.sh/) + [Tailwind CSS](https://tailwindcss.com/)
+- **Backend:** [Go 1.24](https://go.dev/) (Standard Library + Clean Architecture)
 - **Database:** [PostgreSQL 15](https://www.postgresql.org/)
-- **Infrastructure:** [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)
-- **Testing:** [Bun Test](https://bun.sh/docs/cli/test) (Frontend) & [Go Test](https://go.dev/doc/tutorial/add-a-test) (Backend)
-- **Type Sync:** [Tygo](https://github.com/gzuidhof/tygo) (Auto-generate TS types from Go structs)
+- **Infrastructure:** [Docker Compose](https://docs.docker.com/compose/)
+- **Testing:** [Bun Test](https://bun.sh/docs/cli/test) & [Go Test](https://go.dev/doc/tutorial/add-a-test)
+- **Type Sync:** [Tygo](https://github.com/gzuidhof/tygo) (Go Structs -> TypeScript Interfaces)
 
-## 🏗️ Architecture & Performance Strategy
+## 📋 Prasyarat
 
-Project ini menggunakan strategi 3-Layer Performance Protection:
+Sebelum memulai, pastikan Anda telah menginstal tools berikut:
 
-1.  **Layer 1 (Frontend Cache - ISR):**
-    - Next.js menggunakan *Incremental Static Regeneration* (revalidate: 60s).
-    - Traffic user biasa (read-only) dilayani instan oleh cache HTML Next.js tanpa menyentuh backend.
-    - **Benchmark:** ~850 req/sec (HTML Page).
+- [Docker](https://www.docker.com/products/docker-desktop/) & Docker Compose
+- [Go](https://go.dev/dl/) (versi 1.20+)
+- [Bun](https://bun.sh/) (versi 1.0+)
+- [Make](https://www.gnu.org/software/make/) (biasanya sudah ada di Linux/macOS)
 
-2.  **Layer 2 (Backend Rate Limiting):**
-    - Global Rate Limiter terpasang di level middleware Go.
-    - Membatasi 5 request/detik per IP (Burst 10).
-    - Melindungi server dari spam/DDoS.
-    - **Benchmark:** Menahan beban >8.000 req/sec (Rejected/Protected).
+## ⚡ Quick Start (Docker)
 
-3.  **Layer 3 (Efficient Go Backend):**
-    - Logic bisnis dieksekusi oleh Go yang sangat efisien memori.
-    - **Benchmark:** >1.500 transaksi valid per detik (Direct DB access).
+Cara termudah untuk menjalankan seluruh stack adalah menggunakan Docker Compose.
+
+1. **Jalankan Stack:**
+
+   ```bash
+   docker-compose up -d --build
+   ```
+
+2. **Isi Data Awal (Seeding):**
+
+   ```bash
+   make seed
+   ```
+
+   _Perintah ini akan mengisi database dengan data dummy._
+
+3. **Akses Aplikasi:**
+
+   - **Frontend:** [http://localhost:3000](http://localhost:3000)
+   - **Backend API:** [http://localhost:8080](http://localhost:8080)
+   - **Database:** Port `5432` (User: `user`, Pass: `password`, DB: `blitz_db`)
+
+4. **Hentikan Aplikasi:**
+   ```bash
+   make stop
+   ```
+
+## 💻 Local Development
+
+Jika Anda ingin menjalankan Backend atau Frontend secara lokal (di host machine) untuk development yang lebih cepat (misal: hot-reload), ikuti langkah ini:
+
+### 1. Jalankan Database
+
+Gunakan Docker hanya untuk database PostgreSQL:
+
+```bash
+make db
+```
+
+### 2. Jalankan Backend (Go)
+
+Di terminal baru:
+
+```bash
+make dev-backend
+```
+
+_Backend akan berjalan di `http://localhost:8080` dan terhubung ke database lokal._
+
+### 3. Jalankan Frontend (Next.js)
+
+Di terminal baru lainnya:
+
+```bash
+make dev-frontend
+```
+
+_Frontend akan berjalan di `http://localhost:3000`._
+
+### 4. Setup Data Lokal
+
+Jika Anda menjalankan backend secara lokal, gunakan perintah seed lokal:
+
+```bash
+make seed-local
+```
 
 ## 📁 Struktur Folder
 
 ```text
-dealer-heronusa/
 ├── backend/
-│   ├── cmd/            # Entry points (api, seeder)
-│   ├── internal/       # Private code (handlers, database, middleware)
-│   └── models/         # Go Structs (Shared Models)
+│   ├── cmd/            # Entry points aplikasi (server, seeder)
+│   ├── internal/       # Private application code
+│   │   ├── database/   # Koneksi dan setup DB
+│   │   ├── handlers/   # HTTP handlers (Controllers)
+│   │   └── middleware/ # HTTP middlewares
+│   ├── models/         # Struct data (Shared dengan frontend via Tygo)
+│   └── main.go         # Entry point utama server
 ├── frontend/
-│   ├── app/            # Next.js App Router (Server Components)
-│   ├── components/     # UI Components (Client Components)
-│   └── __tests__/      # Frontend Unit Tests
-├── docker-compose.yml  # Orchestration
-├── Makefile            # Shortcut commands
-└── tygo.yaml           # Type generation config
+│   ├── app/            # Next.js App Router pages
+│   ├── components/     # React components
+│   ├── types/          # TypeScript types (generated)
+│   └── package.json    # Dependencies frontend
+├── Makefile            # Shortcut perintah-perintah penting
+└── docker-compose.yml  # Konfigurasi container Docker
 ```
 
-## 🛠️ Cara Menjalankan
+## 🛠️ Perintah Make yang Tersedia
 
-### 1. Menggunakan Docker (Production Ready)
+File `Makefile` menyediakan shortcut untuk tugas-tugas umum:
 
-Jalankan seluruh stack dalam mode background:
+| Command             | Deskripsi                                                                 |
+| :------------------ | :------------------------------------------------------------------------ |
+| `make db`           | Menjalankan container database PostgreSQL saja                            |
+| `make dev-backend`  | Menjalankan backend Go secara lokal dengan hot-reload (via `go run`)      |
+| `make dev-frontend` | Menjalankan frontend Next.js secara lokal dengan Bun                      |
+| `make dev`          | Menjalankan database, backend, dan frontend secara bersamaan              |
+| `make stop`         | Menghentikan dan menghapus semua container Docker                         |
+| `make seed`         | Menjalankan seeder data di dalam container backend (saat Docker berjalan) |
+| `make seed-local`   | Menjalankan seeder data secara lokal (saat `make dev-backend` digunakan)  |
+| `make sync-types`   | Sinkronisasi tipe data dari Go structs ke TypeScript interfaces           |
+| `make test-all`     | Menjalankan unit test untuk Backend dan Frontend                          |
+
+## ⚙️ Konfigurasi (Environment Variables)
+
+Aplikasi menggunakan environment variables untuk konfigurasi.
+
+- **Backend:** Secara default dikonfigurasi di `Makefile` untuk local dev (`DB_HOST=localhost`, dll). Di Docker, diatur via `docker-compose.yml`.
+- **Frontend:** Menggunakan `NEXT_PUBLIC_API_URL` (client-side) dan `API_URL` (server-side fetching).
+
+## 🔄 Type Synchronization
+
+Salah satu fitur unggulan template ini adalah sinkronisasi tipe data otomatis dari Go ke TypeScript.
+Jika Anda mengubah struct di `backend/models/`, jalankan perintah ini untuk memperbarui tipe di frontend:
+
 ```bash
-docker-compose up -d --build
+make sync-types
 ```
 
-Akses aplikasi:
-- Frontend: [http://localhost:3000](http://localhost:3000)
-- Backend: [http://localhost:8080](http://localhost:8080)
+_Ini akan memperbarui file `frontend/types/index.ts`._
 
-### 2. Mode Development (Hybrid)
+## 🧪 Testing
 
-Jika ingin fitur Hot Reload tanpa rebuild Docker:
-1. Jalankan database: `make db`
-2. Jalankan backend: `make dev-backend`
-3. Jalankan frontend: `make dev-frontend`
+Jalankan test suite untuk memastikan kode Anda berjalan dengan baik:
 
-## 🧪 Database & Seeding
-
-Data database tersimpan di volume Docker. Untuk mengisi data awal (seeding):
 ```bash
-make seed
-```
-*Note: Seeding menggunakan binary terpisah (`cmd/seeder`) dan aman dijalankan di production (hanya mengisi jika tabel kosong).*
-
-## 🔄 Sinkronisasi Tipe Data (Go -> TS)
-
-Jika kamu mengubah struct di `backend/models`, perbarui interface TypeScript secara otomatis:
-```bash
-cd backend && go run github.com/gzuidhof/tygo@latest generate
+make test-all
 ```
 
-## 📈 Testing
+- **Backend:** Menggunakan `go test` standar + `go-sqlmock` untuk mocking database.
+- **Frontend:** Menggunakan `bun test` + `react-testing-library`.
 
-### Backend (Unit Test with Mock DB)
-```bash
-cd backend && go test ./...
-```
+## ❓ Troubleshooting
 
-### Frontend (Bun Native Test)
-```bash
-cd frontend && bun run test
-```
-*Atau gunakan panel Testing di VS Code.*
-
-## 🔐 Keamanan
-- **Rate Limiting:** Terpasang secara global.
-- **Middleware:** Logika request dipisahkan di `internal/middleware`.
-- **Environment:** Konfigurasi via Environment Variables di `docker-compose.yml`.
+- **Port Conflict:** Pastikan port `3000`, `8080`, dan `5432` tidak sedang digunakan oleh aplikasi lain.
+- **Database Connection Error:** Pastikan container database sudah berjalan (`make db` atau `docker-compose up db`) sebelum menjalankan backend.
+- **Bun Error:** Jika `bun install` atau `bun dev` gagal, pastikan Anda menggunakan versi Bun terbaru (`bun upgrade`).

@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"fmt"
 
-	"dealer-heronusa/backend/models"
+	"blitz-stack/backend/models"
 )
 
 func HealthCheck(db *sql.DB) http.HandlerFunc {
@@ -15,31 +15,31 @@ func HealthCheck(db *sql.DB) http.HandlerFunc {
 			http.Error(w, fmt.Sprintf("Database error: %v", err), http.StatusInternalServerError)
 			return
 		}
-		fmt.Fprintf(w, "Database Connection: OK")
+		fmt.Fprintf(w, "Blitz Stack Status: OK")
 	}
 }
 
-func GetDealers(db *sql.DB) http.HandlerFunc {
+func GetItems(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		rows, err := db.Query("SELECT id, name, city FROM dealers")
+		rows, err := db.Query("SELECT id, title, description FROM items")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		defer rows.Close()
 
-		dealers := []models.Dealer{}
+		items := []models.Item{}
 		
 		for rows.Next() {
-			var d models.Dealer
-			if err := rows.Scan(&d.ID, &d.Name, &d.City); err != nil {
+			var i models.Item
+			if err := rows.Scan(&i.ID, &i.Title, &i.Description); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			dealers = append(dealers, d)
+			items = append(items, i)
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(dealers)
+		json.NewEncoder(w).Encode(items)
 	}
 }

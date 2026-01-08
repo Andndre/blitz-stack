@@ -2,12 +2,12 @@ services:
   # PostgreSQL Database
   db:
     image: postgres:15-alpine
-    container_name: dealer_heronusa_db
+    container_name: blitz_db
     restart: always
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: dealer_heronusa
+      POSTGRES_DB: blitz_db
     ports:
       - "5432:5432"
     volumes:
@@ -16,7 +16,7 @@ services:
   # Go Backend
   backend:
     build: ./backend
-    container_name: dealer_heronusa_backend
+    container_name: blitz_backend
     restart: always
     ports:
       - "8080:8080"
@@ -26,21 +26,21 @@ services:
       DB_HOST: db
       DB_USER: user
       DB_PASSWORD: password
-      DB_NAME: dealer_heronusa
+      DB_NAME: blitz_db
       DB_PORT: 5432
 
   # Next.js Frontend
   frontend:
     build: ./frontend
-    container_name: dealer_heronusa_frontend
+    container_name: blitz_frontend
     restart: always
     ports:
       - "3000:3000"
     depends_on:
       - backend
     environment:
-      NEXT_PUBLIC_API_URL: http://localhost:8080 # Client-side access
-      API_URL: http://backend:8080               # Server-side access (Docker network)
+      NEXT_PUBLIC_API_URL: http://localhost:8080
+      API_URL: http://backend:8080
 
 volumes:
   db_data:

@@ -5,9 +5,9 @@ import (
 	"log"
 	"net/http"
 
-	"dealer-heronusa/backend/internal/database"
-	"dealer-heronusa/backend/internal/handlers"
-	"dealer-heronusa/backend/internal/middleware"
+	"blitz-stack/backend/internal/database"
+	"blitz-stack/backend/internal/handlers"
+	"blitz-stack/backend/internal/middleware"
 )
 
 func main() {
@@ -19,26 +19,26 @@ func main() {
 		fmt.Println("Successfully connected to the database!")
 		defer db.Close()
 		
-		// Initialize Tables & Seed Data
+		// Initialize Tables
 		database.InitTable(db)
 	}
 
 	// Create a new ServeMux (Router)
 	mux := http.NewServeMux()
 
-	// Setup Routes on the mux
+	// Setup Routes
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello from Go Backend!")
+		fmt.Fprintf(w, "Welcome to Blitz Stack API!")
 	})
 
 	mux.HandleFunc("/health", handlers.HealthCheck(db))
-	mux.HandleFunc("/api/dealers", handlers.GetDealers(db))
+	mux.HandleFunc("/api/items", handlers.GetItems(db))
 
-	// Apply Global Middleware (Rate Limiting) to all routes
+	// Apply Global Middleware (Rate Limiting)
 	wrappedMux := middleware.LimitMiddleware(mux)
 
-	// Start Server with the wrapped handler
-	fmt.Println("Server starting on port 8080...")
+	// Start Server
+	fmt.Println("Blitz Server starting on port 8080...")
 	if err := http.ListenAndServe(":8080", wrappedMux); err != nil {
 		fmt.Printf("Error starting server: %s\n", err)
 	}

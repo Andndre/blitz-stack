@@ -1,4 +1,4 @@
-module dealer-heronusa/backend
+module blitz-stack/backend
 
 go 1.24.0
 

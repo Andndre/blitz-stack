@@ -6,11 +6,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"dealer-heronusa/backend/models"
+	"blitz-stack/backend/models"
 	"github.com/DATA-DOG/go-sqlmock"
 )
 
-func TestGetDealers(t *testing.T) {
+func TestGetItems(t *testing.T) {
 	// Create a mock database connection
 	db, mock, err := sqlmock.New()
 	if err != nil {
@@ -19,22 +19,22 @@ func TestGetDealers(t *testing.T) {
 	defer db.Close()
 
 	// Mock data
-	rows := sqlmock.NewRows([]string{"id", "name", "city"}).
-		AddRow(1, "Dealer Test A", "City A").
-		AddRow(2, "Dealer Test B", "City B")
+	rows := sqlmock.NewRows([]string{"id", "title", "description"}).
+		AddRow(1, "Item A", "Desc A").
+		AddRow(2, "Item B", "Desc B")
 
 	// Expect the query to be executed
-	mock.ExpectQuery("SELECT id, name, city FROM dealers").WillReturnRows(rows)
+	mock.ExpectQuery("SELECT id, title, description FROM items").WillReturnRows(rows)
 
 	// Create a request
-	req, err := http.NewRequest("GET", "/api/dealers", nil)
+	req, err := http.NewRequest("GET", "/api/items", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	// Create a ResponseRecorder to record the response
 	rr := httptest.NewRecorder()
-	handler := GetDealers(db)
+	handler := GetItems(db)
 
 	// Call the handler
 	handler.ServeHTTP(rr, req)
@@ -45,17 +45,17 @@ func TestGetDealers(t *testing.T) {
 			status, http.StatusOK)
 	}
 
-	var dealers []models.Dealer
-	if err := json.NewDecoder(rr.Body).Decode(&dealers); err != nil {
+	var items []models.Item
+	if err := json.NewDecoder(rr.Body).Decode(&items); err != nil {
 		t.Errorf("failed to decode response: %v", err)
 	}
 
-	if len(dealers) != 2 {
-		t.Errorf("expected 2 dealers, got %v", len(dealers))
+	if len(items) != 2 {
+		t.Errorf("expected 2 items, got %v", len(items))
 	}
 
-	if dealers[0].Name != "Dealer Test A" {
-		t.Errorf("expected dealer name 'Dealer Test A', got %v", dealers[0].Name)
+	if items[0].Title != "Item A" {
+		t.Errorf("expected item title 'Item A', got %v", items[0].Title)
 	}
 
 	// Verify all expectations were met

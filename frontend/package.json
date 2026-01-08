@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "bun test"
+    "test": "bun test --preload ./test-setup.ts"
   },
   "dependencies": {
     "next": "16.1.1",
