@@ -117,10 +117,10 @@ File `Makefile` menyediakan shortcut untuk tugas-tugas umum:
 | :------------------ | :------------------------------------------------------------------------ |
 | `make db`           | Menjalankan container database PostgreSQL saja                            |
 | `make dev-backend`  | Menjalankan backend Go secara lokal dengan hot-reload (via `go run`)      |
-| `make dev-frontend` | Menjalankan frontend Next.js secara lokal dengan Bun |
-| `make dev` | Menjalankan database, backend, dan frontend secara bersamaan |
-| `make production` | Build dan jalankan seluruh stack dalam Docker container (rebuild images) |
-| `make stop` | Menghentikan dan menghapus semua container Docker |
+| `make dev-frontend` | Menjalankan frontend Next.js secara lokal dengan Bun                      |
+| `make dev`          | Menjalankan database, backend, dan frontend secara bersamaan              |
+| `make production`   | Build dan jalankan seluruh stack dalam Docker container (rebuild images)  |
+| `make stop`         | Menghentikan dan menghapus semua container Docker                         |
 | `make seed`         | Menjalankan seeder data di dalam container backend (saat Docker berjalan) |
 | `make seed-local`   | Menjalankan seeder data secara lokal (saat `make dev-backend` digunakan)  |
 | `make sync-types`   | Sinkronisasi tipe data dari Go structs ke TypeScript interfaces           |
