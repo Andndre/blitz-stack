@@ -1,4 +1,4 @@
-.PHONY: db dev-backend dev-frontend dev stop seed seed-local sync-types test-all
+.PHONY: db dev-backend dev-frontend dev production stop seed seed-local sync-types test-all
 
 # Jalankan database saja
 db:
@@ -15,6 +15,10 @@ dev-frontend:
 # Jalankan database, backend, dan frontend secara bersamaan
 dev: db
 	@$(MAKE) -j 2 dev-backend dev-frontend
+
+# Build dan jalankan container untuk produksi
+production:
+	docker-compose up -d --build
 
 # Matikan database
 stop:
