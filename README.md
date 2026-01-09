@@ -41,25 +41,54 @@ Cara termudah untuk menjalankan seluruh stack adalah menggunakan Docker Compose.
 3. **Akses Aplikasi:**
 
    - **Frontend:** [http://localhost:3000](http://localhost:3000)
+
    - **Backend API:** [http://localhost:8080](http://localhost:8080)
-   - **Database:** Port `5432` (User: `user`, Pass: `password`, DB: `blitz_db`)
+
+   - **Database GUI (Adminer):** [http://localhost:8081](http://localhost:8081)
+
+     - *System:* PostgreSQL
+
+     - *Server:* `db`
+
+     - *Username:* `user`
+
+     - *Password:* `password`
+
+     - *Database:* `blitz_db`
+
+
 
 4. **Hentikan Aplikasi:**
+
    ```bash
+
    make stop
+
    ```
+
+
 
 ## 💻 Local Development
 
+
+
 Jika Anda ingin menjalankan Backend atau Frontend secara lokal (di host machine) untuk development yang lebih cepat (misal: hot-reload), ikuti langkah ini:
 
-### 1. Jalankan Database
 
-Gunakan Docker hanya untuk database PostgreSQL:
+
+### 1. Jalankan Database & GUI
+
+Gunakan Docker untuk database PostgreSQL dan Adminer:
 
 ```bash
+
 make db
+
 ```
+
+*Adminer dapat diakses di [http://localhost:8081](http://localhost:8081).*
+
+
 
 ### 2. Jalankan Backend (Go)
 

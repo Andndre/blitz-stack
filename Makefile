@@ -1,8 +1,8 @@
 .PHONY: db dev-backend dev-frontend dev production stop seed seed-local sync-types test-all
 
-# Jalankan database saja
+# Jalankan database dan adminer GUI
 db:
-	docker-compose up -d db
+	docker-compose up -d db adminer
 
 # Jalankan backend di host
 dev-backend:
